@@ -23,32 +23,37 @@ class _StackViewState extends State<StackView> {
       listenable: widget.controller,
       builder: (context, child) {
         return Stack(
+          fit: StackFit.loose,
           children: List.generate(widget.items.length, (index) {
             final item = widget.items[index];
             return AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
+              curve: Curves.easeInOut,
               top: _calculateTopPosition(index),
               left: 0,
               right: 0,
-              height: item.state == StackItemState.expanded
-                  ? item.expandedHeight
-                  : item.collapsedHeight,
-              child: GestureDetector(
-                onTap: () {
-                  if (item.state == StackItemState.collapsed) {
-                    while (widget.controller.currentIndex != index) {
-                      if (index < widget.controller.currentIndex) {
-                        widget.controller.back();
-                      } else {
-                        widget.controller.next();
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                height: item.state == StackItemState.expanded
+                    ? item.expandedHeight
+                    : item.collapsedHeight,
+                child: GestureDetector(
+                  onTap: () {
+                    if (item.state == StackItemState.collapsed) {
+                      while (widget.controller.currentIndex != index) {
+                        if (index < widget.controller.currentIndex) {
+                          widget.controller.back();
+                        } else {
+                          widget.controller.next();
+                        }
                       }
                     }
-                  }
-                },
-                child: item.state == StackItemState.expanded
-                    ? item.expandedView
-                    : item.collapsedView,
+                  },
+                  child: item.state == StackItemState.expanded
+                      ? item.expandedView
+                      : item.collapsedView,
+                ),
               ),
             );
           }),

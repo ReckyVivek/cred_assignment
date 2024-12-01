@@ -28,6 +28,10 @@ class _MainPageState extends State<MainPage> {
     if (_isInitialized) return;
     _isInitialized = true;
 
+    final screenHeight = MediaQuery.of(context).size.height;
+    final expandedHeight = screenHeight - kToolbarHeight;
+    const collapsedHeight = 100.0;
+
     _controller.addItem(
       StackItem(
         expandedView: CreditAmountPage(
@@ -38,8 +42,8 @@ class _MainPageState extends State<MainPage> {
           subtitle: '₹150,000',
           backgroundColor: Color(0xFF14191E),
         ),
-        collapsedHeight: 100,
-        expandedHeight: MediaQuery.of(context).size.height,
+        collapsedHeight: collapsedHeight,
+        expandedHeight: expandedHeight,
       ),
     );
 
@@ -56,8 +60,8 @@ class _MainPageState extends State<MainPage> {
           subtitle: '12 months - ₹12,500/mo',
           backgroundColor: Color(0xFF191928),
         ),
-        collapsedHeight: 100,
-        expandedHeight: MediaQuery.of(context).size.height * 0.85,
+        collapsedHeight: collapsedHeight,
+        expandedHeight: expandedHeight,
       ),
     );
 
@@ -71,8 +75,8 @@ class _MainPageState extends State<MainPage> {
           subtitle: 'HDFC Bank ****1234',
           backgroundColor: Color(0xFF23283C),
         ),
-        collapsedHeight: 100,
-        expandedHeight: MediaQuery.of(context).size.height * 0.7,
+        collapsedHeight: collapsedHeight,
+        expandedHeight: expandedHeight,
       ),
     );
   }
@@ -80,12 +84,13 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     _setupStackItems(context);
-    return PopScope(
-      canPop: !_controller.canGoBack,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_controller.canGoBack) {
           _controller.back();
+          return false; // Prevent default back action
         }
+        return true; // Allow default back action (exit app)
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF0F1419),
