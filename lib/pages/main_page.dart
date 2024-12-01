@@ -84,13 +84,12 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     _setupStackItems(context);
-    return WillPopScope(
-      onWillPop: () async {
-        if (_controller.canGoBack) {
+    return PopScope(
+      canPop: !_controller.canGoBack,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
           _controller.back();
-          return false; // Prevent default back action
         }
-        return true; // Allow default back action (exit app)
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF0F1419),
