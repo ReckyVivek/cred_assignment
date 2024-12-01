@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:cred_assignment/widgets/page_title.dart';
 import 'package:flutter/material.dart';
+import 'package:cred_assignment/constants/mock_data.dart';
 
 class CreditAmountPage extends StatefulWidget {
   final VoidCallback? onProceedToEmi;
@@ -15,13 +16,16 @@ class CreditAmountPage extends StatefulWidget {
 }
 
 class _CreditAmountPageState extends State<CreditAmountPage> {
-  static const double maxAmount = 150000;
+  late final double maxAmount;
   double progressValue = 0.7;
   final TextEditingController _amountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    maxAmount = (mockData['items'] as List)[0]['open_state']['body']['card']
+            ['max_range']
+        .toDouble();
     _amountController.text = formattedAmount;
   }
 
@@ -50,22 +54,10 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final creditData = (mockData['items'] as List)[0]['open_state']['body'];
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F1419),
-      // appBar: AppBar(
-      //   backgroundColor: const Color(0xFF0F1419),
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.close, color: Colors.white),
-      //     onPressed: () {},
-      //   ),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.help_outline, color: Colors.white),
-      //       onPressed: () {},
-      //     ),
-      //   ],
-      // ),
       body: Container(
         height: MediaQuery.of(context).size.height - 80,
         decoration: const BoxDecoration(
@@ -79,8 +71,15 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
           child: Column(
             children: [
               PageTitle(
-                title: 'nikunj, how much do you need?',
+                title: creditData['title'],
                 onTap: widget.onProceedToEmi,
+              ),
+              Text(
+                creditData['subtitle'],
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 14,
+                ),
               ),
               Expanded(
                 child: Center(
@@ -118,9 +117,9 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
-                              'credit amount',
-                              style: TextStyle(
+                            Text(
+                              creditData['card']['header'],
+                              style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 16,
                               ),
@@ -144,13 +143,7 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
                               textAlign: TextAlign.center,
                               onChanged: _updateAmount,
                             ),
-                            Text(
-                              '₹1.5M available',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.5),
-                                fontSize: 14,
-                              ),
-                            ),
+                            const SizedBox(height: 8),
                           ],
                         ),
                       ],
@@ -161,7 +154,7 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'simply to remind, money will be credited within',
+                  creditData['footer'],
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 14,
@@ -184,9 +177,9 @@ class _CreditAmountPageState extends State<CreditAmountPage> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text(
-                    'Proceed to EMI option',
-                    style: TextStyle(
+                  child: Text(
+                    (mockData['items'] as List)[0]['cta_text'],
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

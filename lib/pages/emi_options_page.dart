@@ -1,3 +1,4 @@
+import 'package:cred_assignment/constants/mock_data.dart';
 import 'package:cred_assignment/widgets/page_title.dart';
 import 'package:flutter/material.dart';
 
@@ -18,29 +19,46 @@ class EmiOptionsPage extends StatefulWidget {
 class _EmiOptionsPageState extends State<EmiOptionsPage> {
   int? selectedEmiOption;
 
-  final List<Map<String, dynamic>> emiOptions = [
-    {
-      'months': 3,
-      'amount': '₹50,000/mo',
-      'interest': '12% p.a.',
-    },
-    {
-      'months': 6,
-      'amount': '₹25,000/mo',
-      'interest': '13% p.a.',
-    },
-    {
-      'months': 12,
-      'amount': '₹12,500/mo',
-      'interest': '14% p.a.',
-    },
+  // final List<Map<String, dynamic>> emiOptions = [
+  //   {
+  //     'months': 3,
+  //     'amount': '₹50,000/mo',
+  //     'interest': '12% p.a.',
+  //   },
+  //   {
+  //     'months': 6,
+  //     'amount': '₹25,000/mo',
+  //     'interest': '13% p.a.',
+  //   },
+  //   {
+  //     'months': 12,
+  //     'amount': '₹12,500/mo',
+  //     'interest': '14% p.a.',
+  //   },
+  // ];
+
+  // Add the list of colors for unselected cards
+  final List<Color> cardColors = const [
+    Color(0xFF41323C),
+    Color(0xFF787391),
+    Color(0xFF556987),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final emiData = (mockData['items'] as List)[1]['open_state']['body'];
+    final emiOptions = (emiData['items'] as List)
+        .map((item) => {
+              'months': item['duration'].split(' ')[0],
+              'amount': item['emi'],
+              'title': item['title'],
+              'subtitle': item['subtitle'],
+              'tag': item['tag'],
+            })
+        .toList();
+
     return Scaffold(
       backgroundColor: const Color(0xFF14191E),
-      // appBar: const CustomAppBar(),
       body: Container(
         height: MediaQuery.of(context).size.height - 180,
         decoration: const BoxDecoration(
@@ -54,16 +72,18 @@ class _EmiOptionsPageState extends State<EmiOptionsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PageTitle(
-              title: 'how do you wish to repay?',
+              title: emiData['title'],
               onTap: () => widget.onSelectEmi?.call(
-                '${emiOptions[selectedEmiOption ?? 0]['months']} months - ${emiOptions[selectedEmiOption ?? 0]['amount']}',
+                selectedEmiOption != null
+                    ? emiOptions[selectedEmiOption!]['title']
+                    : '',
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'choose one of our recommended plans or create your own',
-                style: TextStyle(
+                emiData['subtitle'],
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                 ),
@@ -106,9 +126,9 @@ class _EmiOptionsPageState extends State<EmiOptionsPage> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Create your own plan',
-                            style: TextStyle(
+                          Text(
+                            emiData['footer'],
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
                             ),
@@ -122,91 +142,109 @@ class _EmiOptionsPageState extends State<EmiOptionsPage> {
                   final option = emiOptions[index];
                   final isSelected = selectedEmiOption == index;
 
-                  return Container(
-                    width: 170,
-                    height: 120,
-                    margin: const EdgeInsets.only(right: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF37469B)
-                          : const Color(0xFF1E2630),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? Colors.white24 : Colors.transparent,
-                        width: 1,
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedEmiOption = index;
+                      });
+                    },
+                    child: Container(
+                      width: 170,
+                      height: 120,
+                      margin: const EdgeInsets.only(right: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: cardColors[index],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color:
+                              isSelected ? Colors.white24 : Colors.transparent,
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (isSelected)
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: Icon(
-                              Icons.check_circle,
-                              color: Colors.white70,
-                              size: 20,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (isSelected)
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.check_circle,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                            ),
+                          Text(
+                            option['amount'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        Text(
-                          option['amount'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'for ${option['months']} months',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 14,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          option['interest'],
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 12,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'See calculations',
+                          const SizedBox(height: 4),
+                          Text(
+                            'for ${option['months']} months',
                             style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                              decoration: TextDecoration.underline,
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 14,
                             ),
                           ),
-                        ),
-                      ],
+                          const Spacer(),
+                          if (option['tag'] != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                option['tag'] as String,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              option['subtitle'] as String,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 350),
+            const SizedBox(height: 320),
             Container(
               height: 80,
               width: double.infinity,
               padding: const EdgeInsets.only(top: 16.0),
               child: ElevatedButton(
-                onPressed: () {
-                  widget.onSelectEmi?.call(
-                    '${emiOptions[selectedEmiOption ?? 0]['months']} months - ${emiOptions[selectedEmiOption ?? 0]['amount']}',
-                  );
-                },
+                onPressed: selectedEmiOption != null
+                    ? () {
+                        widget.onSelectEmi?.call(
+                          emiOptions[selectedEmiOption!]['title'] as String,
+                        );
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF37469B),
                   disabledBackgroundColor: const Color(0xFF37469B),
@@ -218,9 +256,9 @@ class _EmiOptionsPageState extends State<EmiOptionsPage> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text(
-                  'Select your bank',
-                  style: TextStyle(
+                child: Text(
+                  (mockData['items'] as List)[1]['cta_text'],
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

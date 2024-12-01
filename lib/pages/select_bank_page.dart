@@ -1,3 +1,4 @@
+import 'package:cred_assignment/constants/mock_data.dart';
 import 'package:cred_assignment/widgets/page_title.dart';
 import 'package:flutter/material.dart';
 
@@ -16,29 +17,31 @@ class SelectBankPage extends StatefulWidget {
 class _SelectBankPageState extends State<SelectBankPage> {
   int? selectedBank;
 
-  final List<Map<String, String>> banks = [
-    {
-      'name': 'HDFC Bank',
-      'account': '****1234',
-      'type': 'Savings Account',
-    },
-    {
-      'name': 'ICICI Bank',
-      'account': '****5678',
-      'type': 'Salary Account',
-    },
-    {
-      'name': 'SBI Bank',
-      'account': '****9012',
-      'type': 'Current Account',
-    },
-  ];
+  // final List<Map<String, String>> banks = [
+  //   {
+  //     'name': 'HDFC Bank',
+  //     'account': '00000000',
+  //     'type': 'Savings Account',
+  //   },
+  //   {
+  //     'name': 'ICICI Bank',
+  //     'account': '00000000',
+  //     'type': 'Salary Account',
+  //   },
+  //   {
+  //     'name': 'SBI Bank',
+  //     'account': '00000000',
+  //     'type': 'Current Account',
+  //   },
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    final bankData = (mockData['items'] as List)[2]['open_state']['body'];
+    final bankOptions = bankData['items'] as List;
+
     return Scaffold(
       backgroundColor: const Color(0xFF191928),
-      // appBar: const CustomAppBar(),
       body: Container(
         height: MediaQuery.of(context).size.height - 280,
         decoration: const BoxDecoration(
@@ -52,14 +55,14 @@ class _SelectBankPageState extends State<SelectBankPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PageTitle(
-              title: 'where should we send the money?',
+              title: bankData['title'],
               onTap: () => widget.onCollapse?.call(),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'amount will be credited to this bank account',
-                style: TextStyle(
+                bankData['subtitle'],
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                 ),
@@ -68,9 +71,9 @@ class _SelectBankPageState extends State<SelectBankPage> {
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: banks.length,
+                itemCount: bankOptions.length,
                 itemBuilder: (context, index) {
-                  final bank = banks[index];
+                  final bank = bankOptions[index];
                   final isSelected = selectedBank == index;
 
                   return GestureDetector(
@@ -104,7 +107,7 @@ class _SelectBankPageState extends State<SelectBankPage> {
                             ),
                             child: Center(
                               child: Text(
-                                bank['name']![0],
+                                bank['title'][0],
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 18,
@@ -119,7 +122,7 @@ class _SelectBankPageState extends State<SelectBankPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  bank['name']!,
+                                  bank['title'],
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -128,7 +131,7 @@ class _SelectBankPageState extends State<SelectBankPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  bank['account']!,
+                                  bank['subtitle'].toString(),
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 14,
@@ -167,9 +170,9 @@ class _SelectBankPageState extends State<SelectBankPage> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text(
-                  'Tap for 1-click KYC',
-                  style: TextStyle(
+                child: Text(
+                  (mockData['items'] as List)[2]['cta_text'],
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
