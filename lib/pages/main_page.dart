@@ -57,7 +57,7 @@ class _MainPageState extends State<MainPage> {
         ),
         collapsedView: const ClosedPageHeader(
           title: 'EMI Option',
-          subtitle: '12 months - ₹12,500/mo',
+          subtitle: '12 months - ₹4247/mo',
           backgroundColor: Color(0xFF191928),
         ),
         collapsedHeight: collapsedHeight,
